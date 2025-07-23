@@ -13,6 +13,10 @@ java {
 	}
 }
 
+ext {
+	set('springAiVersion', "1.0.0")
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -26,13 +30,23 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'org.postgresql:postgresql:42.7.3'
+
+	implementation 'org.springframework.ai:spring-ai-starter-model-vertex-ai-gemini:1.0.0'
+
 }
 
-tasks.named('test') {
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
+}
+
+tasks.named("test") {
 	useJUnitPlatform()
 }
