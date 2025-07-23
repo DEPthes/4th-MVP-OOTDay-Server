@@ -20,7 +20,7 @@ public class MemberService {
     public UUID join(MemberJoinDTO joinDTO) {
 
         //존재하는지 확인
-        if (memberRepository.existsByMemberId(joinDTO.getMemberId())) {
+        if(memberRepository.existsByMemberId(joinDTO.getMemberId())) {
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }
 
@@ -35,5 +35,18 @@ public class MemberService {
         // DB 저장 후 UUID 받아오기
         MemberEntity savedId = memberRepository.save(memberEntity);
         return savedId.getId(); // UUID로 반환
+    }
+
+    // 이름 가능한지
+    public void validateName(String name) {
+        // 비어있는지
+        if(name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("이름은 비어 있을 수 없어요.");
+        }
+
+        // 한글/영어 O , 숫자/특수문자 X
+        if(!name.matches("^[가-힣a-zA-Z]{2,5}$")) {
+            throw new IllegalArgumentException("숫자, 특수문자, 띄어쓰기는 사용할 수 없어요.");
+        }
     }
 }
