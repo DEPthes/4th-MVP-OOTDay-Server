@@ -49,4 +49,16 @@ public class MemberService {
             throw new IllegalArgumentException("숫자, 특수문자, 띄어쓰기는 사용할 수 없어요.");
         }
     }
+
+    // 전화 번호 --> 아직 문자 인증은 X
+    public void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("전화번호는 비어 있을 수 없어요.");
+        }
+
+        //프론트에서 82+를 받아오는 것인지 물어보기
+        if (!phoneNumber.matches("^\\+82(10\\d{8})$")) {
+            throw new IllegalArgumentException("전화번호는 +821012345678 형식이어야 해요.");
+        }
+    }
 }
