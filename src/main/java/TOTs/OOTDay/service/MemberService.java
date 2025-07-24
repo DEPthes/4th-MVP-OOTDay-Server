@@ -17,48 +17,47 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     //회원가입
-    public UUID join(MemberJoinDTO joinDTO) {
-
-        //존재하는지 확인
-        if(memberRepository.existsByMemberId(joinDTO.getMemberId())) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+    public UUID join(MemberJoinDTO dto) {
+        // 이름 유효성 검사 (한글 또는 영어 2~5자, 숫자/공백/특수문자 불가)
+        if (!dto.getName().matches("^[a-zA-Z가-힣]{2,5}$")) {
+            throw new IllegalArgumentException("이름은 한글 또는 영어만 가능하며, 2~5자여야 해요.");
         }
 
-        //DTO -> Entity 변환
-        MemberEntity memberEntity = MemberEntity.builder()
-                .memberId(joinDTO.getMemberId())
-                .password(passwordEncoder.encode(joinDTO.getPassword()))
-                .phoneNumber(joinDTO.getPhoneNumber())
-                .gender(joinDTO.getGender())
+        // 전화번호 유효성 검사 (숫자만 10자리 -> 82+(프런트) 1012345678)
+        if (!dto.getPhoneNumber().matches("^\\d{10}$")) {
+            throw new IllegalArgumentException("전화번호는 82+ 1012345678이어야 해요.");
+        }
+
+        // 아이디 유효성 검사 (영어, 숫자 조합, 5~10자)
+        if (!dto.getMemberId().matches("^[a-zA-Z0-9]{5,10}$")) {
+            throw new IllegalArgumentException("아이디는 영문과 숫자를 조합한 5~10자여야 해요.");
+        }
+
+        if (memberRepository.existsByMemberId(dto.getMemberId())) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        }
+
+        // 비밀번호 유효성 검사 (8~10자, 영어/숫자/특수문자 포함)
+        if (!dto.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,10}$")) {
+            throw new IllegalArgumentException("비밀번호는 8~10자이며 영어, 숫자, 특수문자를 모두 포함해야 해요.");
+        }
+
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        if (!dto.isAgree()) {
+            throw new IllegalArgumentException("이용약관에 동의해야 합니다.");
+        }
+
+        MemberEntity entity = MemberEntity.builder()
+                .name(dto.getName())
+                .phoneNumber(dto.getPhoneNumber())
+                .memberId(dto.getMemberId())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .agree(dto.isAgree())
                 .build();
 
-        // DB 저장 후 UUID 받아오기
-        MemberEntity savedId = memberRepository.save(memberEntity);
-        return savedId.getId(); // UUID로 반환
-    }
-
-    // 이름 가능한지
-    public void validateName(String name) {
-        // 비어있는지
-        if(name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("이름은 비어 있을 수 없어요.");
-        }
-
-        // 한글/영어 O , 숫자/특수문자 X
-        if(!name.matches("^[가-힣a-zA-Z]{2,5}$")) {
-            throw new IllegalArgumentException("숫자, 특수문자, 띄어쓰기는 사용할 수 없어요.");
-        }
-    }
-
-    // 전화 번호 --> 아직 문자 인증은 X
-    public void validatePhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            throw new IllegalArgumentException("전화번호는 비어 있을 수 없어요.");
-        }
-
-        //프론트에서 82+를 받아오는 것인지 물어보기
-        if (!phoneNumber.matches("^\\+82(10\\d{8})$")) {
-            throw new IllegalArgumentException("전화번호는 +821012345678 형식이어야 해요.");
-        }
+        return memberRepository.save(entity).getId();
     }
 }

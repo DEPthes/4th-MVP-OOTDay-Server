@@ -18,13 +18,19 @@ public class MemberEntity {
     @Id // 기본키
     @GeneratedValue
     @Column(name = "id", columnDefinition = "uuid") // UUID
-    private UUID id;
+    private UUID id; // UUID
+
+    @Column(nullable = false)
+    private String name; // 이름
 
     @Column(name = "member_id", nullable = false, unique = true)
     private String memberId; // 아이디
 
     @Column(nullable = false)
     private String password; // 비밀번호
+
+    @Column(name = "agree")
+    private boolean agree; // 약관 동의 여부
 
     /*
     @Column(length = 255)
