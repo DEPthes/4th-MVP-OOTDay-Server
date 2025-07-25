@@ -1,6 +1,8 @@
 package TOTs.OOTDay.service;
 
+import TOTs.OOTDay.config.JwtUtil;
 import TOTs.OOTDay.dto.MemberJoinDTO;
+import TOTs.OOTDay.dto.MemberLoginDTO;
 import TOTs.OOTDay.entity.MemberEntity;
 import TOTs.OOTDay.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +61,20 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(entity).getId();
+    }
+
+    //로그인 구현
+     public String login(MemberLoginDTO loginDTO) {
+        //memberId로 사용자 조희
+        MemberEntity member = memberRepository.findByMemberId(loginDTO.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(loginDTO.getPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+
+        // 로그인 성공 -> JWT 토큰 생성 후 반환
+        return JwtUtil.generateToken(member.getMemberId());
     }
 }
