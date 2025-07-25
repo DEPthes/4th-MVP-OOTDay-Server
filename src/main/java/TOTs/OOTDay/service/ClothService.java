@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,8 +28,16 @@ public class ClothService {
         return clothRepository.save(cloth);
     }
 
-    public List<Cloth> findAll() {
-        return clothRepository.findAll();
+    public List<GeminiClothingRequest> findAll() {
+        List<Cloth> list = clothRepository.findAll();
+        List<GeminiClothingRequest> dtoList = new ArrayList<>();
+        for (Cloth cloth : list) {
+            GeminiClothingRequest dto = new GeminiClothingRequest(cloth.getName(), cloth.getCategory(),
+                    cloth.getMood(), cloth.getDescription());
+
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 
     @Transactional

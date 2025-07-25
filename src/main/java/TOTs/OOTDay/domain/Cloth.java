@@ -3,9 +3,11 @@ package TOTs.OOTDay.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 public class Cloth {
 

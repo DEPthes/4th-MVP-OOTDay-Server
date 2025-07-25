@@ -30,7 +30,7 @@ public class ClothController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cloth>> getAllCloth() {
+    public ResponseEntity<List<GeminiClothingRequest>> getAllCloth() {
         return ResponseEntity.ok(clothService.findAll());
     }
 
