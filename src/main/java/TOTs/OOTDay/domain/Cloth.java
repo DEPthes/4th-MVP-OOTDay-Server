@@ -1,13 +1,12 @@
 package TOTs.OOTDay.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Cloth {
 
     @Id
@@ -23,4 +22,7 @@ public class Cloth {
 
     private String description;//옷에 대한 간단한 설명
 
+    public Cloth() {
+
+    }
 }

@@ -24,13 +24,7 @@ public class ClothController {
     public ResponseEntity<Cloth> uploadCloth(@RequestPart("image") MultipartFile image) {
         GeminiClothingRequest geminiInfo = geminiService.analyzeCloth(image);
 
-        Cloth cloth = new Cloth(); // 엔티티에 사진 정보 넣기
-        cloth.setName(geminiInfo.getName());
-        cloth.setCategory(geminiInfo.getCategory());
-        cloth.setMood(geminiInfo.getMood());
-        cloth.setDescription(geminiInfo.getDescription());
-
-        Cloth saved = clothService.saveCloth(cloth, image);
+        Cloth saved = clothService.saveCloth(geminiInfo, image);
 
         return ResponseEntity.ok(saved);
     }
