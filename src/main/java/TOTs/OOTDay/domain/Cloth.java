@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Entity
 @Builder
 @Getter
@@ -15,6 +17,15 @@ public class Cloth {
     @GeneratedValue
     @Column(name = "cloth_id")
     private Long id; //pk
+
+    private UUID uuid; //옷 삭제를 위한 id(외부로 노출)
+
+    @PrePersist
+    public void generateUuid() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID();
+        }
+    }
 
     private String name; //사진 이름
 

@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +33,8 @@ public class ClothService {
         List<Cloth> list = clothRepository.findAll();
         List<GeminiClothingRequest> dtoList = new ArrayList<>();
         for (Cloth cloth : list) {
-            GeminiClothingRequest dto = new GeminiClothingRequest(cloth.getName(), cloth.getCategory(),
-                    cloth.getMood(), cloth.getDescription());
+            GeminiClothingRequest dto = new GeminiClothingRequest(cloth.getUuid(), cloth.getCategory(),
+                    cloth.getMood(), cloth.getDescription(),cloth.getName());
 
             dtoList.add(dto);
         }
@@ -41,8 +42,8 @@ public class ClothService {
     }
 
     @Transactional
-    public void deleteCloth(Long id) {
-        clothRepository.deleteById(id);
+    public void deleteCloth(UUID uuid) {
+        clothRepository.deleteByUuid(uuid);
     }
 
 }

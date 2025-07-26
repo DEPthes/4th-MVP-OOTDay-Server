@@ -60,7 +60,6 @@ public class GeminiService {
             return response.substring(start + 7, end).trim();
         }
 
-        // fallback: 그냥 { 로 시작하면 그대로 반환
         if (response.trim().startsWith("{")) {
             return response.trim();
         }

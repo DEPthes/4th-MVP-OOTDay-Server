@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,9 +35,9 @@ public class ClothController {
         return ResponseEntity.ok(clothService.findAll());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Cloth> deleteCloth(@PathVariable Long id) {
-        clothService.deleteCloth(id);
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Cloth> deleteCloth(@PathVariable UUID uuid) {
+        clothService.deleteCloth(uuid);
         return ResponseEntity.ok().build();
     }
 }
