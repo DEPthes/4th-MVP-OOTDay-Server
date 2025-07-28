@@ -1,13 +1,13 @@
 package TOTs.OOTDay.service;
 
-import TOTs.OOTDay.domain.ClothingRequest;
+import TOTs.OOTDay.domain.GeminiClothingRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.content.Media;
-import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +17,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OpenAiService {
+public class GeminiService {
 
-    private final OpenAiChatModel model;
+    private final VertexAiGeminiChatModel model;
 
-    public ClothingRequest analyzeCloth(MultipartFile imageFile) {// gemini 한테 사진 보내기
+    public GeminiClothingRequest analyzeCloth(MultipartFile imageFile) { // gemini 한테 사진 보내기
         try {
             byte[] imageBytes = imageFile.getBytes();
 
@@ -33,12 +33,12 @@ public class OpenAiService {
             String jsonFromGeminiResponse = getJsonFromGeminiResponse(userMessage);//gemini 한테 사진 보낸 후 응답 json 받기
 
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(jsonFromGeminiResponse, ClothingRequest.class);
+            return objectMapper.readValue(jsonFromGeminiResponse, GeminiClothingRequest.class);
 
         } catch (IOException e) {
             throw new RuntimeException("파일 처리 또는 JSON 파싱 오류", e);
         } catch (Exception e) {
-            throw new RuntimeException("OpenAi 요청 실패", e);
+            throw new RuntimeException("Gemini 요청 실패", e);
         }
     }
 
@@ -64,6 +64,7 @@ public class OpenAiService {
             return response.trim();
         }
 
-        throw new RuntimeException("openAi 응답에서 JSON을 찾을 수 없습니다:\n" + response);
+        throw new RuntimeException("Gemini 응답에서 JSON을 찾을 수 없습니다:\n" + response);
     }
+
 }
