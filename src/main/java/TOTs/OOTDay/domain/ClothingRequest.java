@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-public class GeminiClothingRequest { //dto
+public class ClothingRequest { //dto
 
     private UUID uuid;
     private String name;
@@ -15,6 +15,6 @@ public class GeminiClothingRequest { //dto
     private String mood;
     private String description;
 
-    public GeminiClothingRequest() {
+    public ClothingRequest() {
     }
 }
