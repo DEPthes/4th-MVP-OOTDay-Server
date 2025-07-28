@@ -1,7 +1,7 @@
 package TOTs.OOTDay.service;
 
 import TOTs.OOTDay.domain.Cloth;
-import TOTs.OOTDay.domain.GeminiClothingRequest;
+import TOTs.OOTDay.domain.ClothingRequest;
 import TOTs.OOTDay.repository.ClothRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class ClothService {
     private final ClothRepository clothRepository;
 
     @Transactional
-    public Cloth saveCloth(GeminiClothingRequest request, MultipartFile file) {
+    public Cloth saveCloth(ClothingRequest request, MultipartFile file) {
         // s3 에 이미지 저장 코드...?
 
         Cloth cloth = Cloth.builder().name(request.getName()).category(request.getCategory())
@@ -29,11 +29,11 @@ public class ClothService {
         return clothRepository.save(cloth);
     }
 
-    public List<GeminiClothingRequest> findAll() {
+    public List<ClothingRequest> findAll() {
         List<Cloth> list = clothRepository.findAll();
-        List<GeminiClothingRequest> dtoList = new ArrayList<>();
+        List<ClothingRequest> dtoList = new ArrayList<>();
         for (Cloth cloth : list) {
-            GeminiClothingRequest dto = new GeminiClothingRequest(cloth.getUuid(), cloth.getCategory(),
+            ClothingRequest dto = new ClothingRequest(cloth.getUuid(), cloth.getCategory(),
                     cloth.getMood(), cloth.getDescription(),cloth.getName());
 
             dtoList.add(dto);
