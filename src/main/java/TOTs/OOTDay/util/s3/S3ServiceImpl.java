@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -90,5 +88,35 @@ public class S3ServiceImpl implements S3Service{
             log.error("[S3 삭제 실패] key: {}, message: {}", key, e.awsErrorDetails().errorMessage());
             throw e;
         }
+    }
+
+    @Override
+    public void deleteFolder(String prefix) {
+        log.info("[S3 폴더 삭제 시작] prefix: {}", prefix);
+        List<String> keys = listKeys(prefix);
+        log.info("[S3 폴더 내 파일 수]: {}", keys.size());
+
+        for (String key : keys) {
+            deleteFile(key);
+        }
+
+        log.info("[S3 폴더 삭제 완료] prefix: {}", prefix);
+    }
+
+    @Override
+    public List<String> listKeys(String prefix) {
+        log.info("[S3 Key 목록 조회] prefix: {}", prefix);
+        ListObjectsV2Request request = ListObjectsV2Request.builder()
+                .bucket(bucket)
+                .prefix(prefix)
+                .build();
+        ListObjectsV2Response response = s3Client.listObjectsV2(request);
+        List<String> keys = response.contents().stream()
+                .map(S3Object::key)
+                .toList();
+
+        log.info("[S3 Key 목록 조회 완료] prefix: {}, keys: {}", prefix, keys);
+
+        return keys;
     }
 }

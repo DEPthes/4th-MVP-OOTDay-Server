@@ -9,7 +9,6 @@ import java.util.UUID;
 
 /**
  * S3 Key 생성 유틸리티 클래스
- *
  * - 도메인별 prefix 생성
  * - 파일 해시 기반 S3 Key 생성
  */
