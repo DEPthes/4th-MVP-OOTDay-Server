@@ -6,6 +6,7 @@ import TOTs.OOTDay.dto.MemberLoginDTO;
 import TOTs.OOTDay.dto.MemberLoginResponseDTO;
 import TOTs.OOTDay.dto.MemberWithdrawDTO;
 import TOTs.OOTDay.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +42,11 @@ public class MemberController {
         memberService.withdraw(dto, token); // 회원 탈퇴
         return ResponseEntity.ok("회원 탈퇴가 완료되었어요.");
 
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        return ResponseEntity.ok("로그아웃");
     }
 }
