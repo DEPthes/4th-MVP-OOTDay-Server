@@ -17,6 +17,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SmsService smsService;
 
     //회원가입
     public UUID join(MemberJoinDTO dto) {
@@ -25,9 +26,13 @@ public class MemberService {
             throw new IllegalArgumentException("이름은 한글 또는 영어만 가능하며, 2~5자여야 해요.");
         }
 
-        // 전화번호 유효성 검사 (숫자만 10자리 -> 82+(프런트) 1012345678)
-        if (!dto.getPhoneNumber().matches("^\\d{10}$")) {
-            throw new IllegalArgumentException("전화번호는 82+ 1012345678이어야 해요.");
+        // 전화번호 유효성 검사 (숫자만 11자리 -> 01012345678로 수정)
+        if (!dto.getPhoneNumber().matches("^\\d{11}$")) {
+            throw new IllegalArgumentException("전화번호는 01012345678이어야 해요.");
+        }
+
+        if (!smsService.isVerified(dto.getPhoneNumber())) {
+            throw new IllegalArgumentException("핸드폰 인증이 필요합니다.");
         }
 
         // 아이디 유효성 검사 (영어, 숫자 조합, 5~10자)
@@ -59,6 +64,8 @@ public class MemberService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .agree(dto.isAgree())
                 .build();
+
+        smsService.clearVerified(dto.getPhoneNumber());
 
         return memberRepository.save(entity).getId();
     }
