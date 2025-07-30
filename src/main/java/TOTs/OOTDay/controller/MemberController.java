@@ -4,13 +4,11 @@ package TOTs.OOTDay.controller;
 import TOTs.OOTDay.dto.MemberJoinDTO;
 import TOTs.OOTDay.dto.MemberLoginDTO;
 import TOTs.OOTDay.dto.MemberLoginResponseDTO;
+import TOTs.OOTDay.dto.MemberWithdrawDTO;
 import TOTs.OOTDay.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -35,5 +33,13 @@ public class MemberController {
         String token = memberService.login(loginDTO); // JWT 토큰 발급
 
         return ResponseEntity.ok(new MemberLoginResponseDTO(token));
+    }
+
+    // 회원탈퇴
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<String> withdraw(@RequestBody MemberWithdrawDTO dto, @RequestHeader("Authorization") String token) {
+        memberService.withdraw(dto, token); // 회원 탈퇴
+        return ResponseEntity.ok("회원 탈퇴가 완료되었어요.");
+
     }
 }
