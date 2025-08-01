@@ -37,8 +37,8 @@ public class MemberService {
         }
 
         // 아이디 유효성 검사 (영어, 숫자 조합, 5~10자)
-        if (!dto.getMemberId().matches("^[a-zA-Z0-9]{5,10}$")) {
-            throw new IllegalArgumentException("아이디는 영문과 숫자를 조합한 5~10자여야 해요.");
+        if (!dto.getMemberId().matches("^[a-zA-Z0-9]{5,20}$")) {
+            throw new IllegalArgumentException("아이디는 영문과 숫자를 조합한 5~20자여야 해요.");
         }
 
         if (memberRepository.existsByMemberId(dto.getMemberId())) {
@@ -46,8 +46,8 @@ public class MemberService {
         }
 
         // 비밀번호 유효성 검사 (8~10자, 영어/숫자/특수문자 포함)
-        if (!dto.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,10}$")) {
-            throw new IllegalArgumentException("비밀번호는 8~10자이며 영어, 숫자, 특수문자를 모두 포함해야 해요.");
+        if (!dto.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,16}$")) {
+            throw new IllegalArgumentException("비밀번호는 8~16자이며 영어, 숫자, 특수문자를 모두 포함해야 해요.");
         }
 
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
