@@ -3,6 +3,7 @@ package TOTs.OOTDay.service;
 import TOTs.OOTDay.config.JwtUtil;
 import TOTs.OOTDay.dto.MemberJoinDTO;
 import TOTs.OOTDay.dto.MemberLoginDTO;
+import TOTs.OOTDay.dto.MemberWithdrawDTO;
 import TOTs.OOTDay.entity.MemberEntity;
 import TOTs.OOTDay.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,11 @@ public class MemberService {
 
         // 전화번호 유효성 검사 (숫자만 11자리 -> 01012345678로 수정)
         if (!dto.getPhoneNumber().matches("^\\d{11}$")) {
-            throw new IllegalArgumentException("전화번호는 01012345678이어야 해요.");
+            throw new IllegalArgumentException("전화번호는 01012345678같은 형식이어야 해요.");
         }
 
         if (!smsService.isVerified(dto.getPhoneNumber())) {
-            throw new IllegalArgumentException("핸드폰 인증이 필요합니다.");
+            throw new IllegalArgumentException("휴대폰 번호 인증이 필요합니다.");
         }
 
         // 아이디 유효성 검사 (영어, 숫자 조합, 5~10자)
@@ -83,5 +84,21 @@ public class MemberService {
 
         // 로그인 성공 -> JWT 토큰 생성 후 반환
         return JwtUtil.generateToken(member.getMemberId());
+    }
+
+    // 회원탈퇴
+    public void withdraw(MemberWithdrawDTO dto, String token) {
+        String memberId = JwtUtil.getMemberIdFromToken(token);
+
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 비밀번호 일치 확인
+        if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        memberRepository.delete(member); // DB에서 회원 삭제
+
     }
 }

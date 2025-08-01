@@ -1,5 +1,6 @@
 package TOTs.OOTDay.config;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -23,5 +24,19 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 만료 시간
                 .signWith(SECRET_KEY) // 서명 알고리즘과 키
                 .compact();                                     // 토큰 문자열로 반환
+    }
+
+    // JWT 토큰에서 memberId 추출
+    public static String getMemberIdFromToken(String token) {
+        // "Bearer "로 시작하는 경우
+        if(token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject(); // subject --> memberId로 사용
     }
 }
