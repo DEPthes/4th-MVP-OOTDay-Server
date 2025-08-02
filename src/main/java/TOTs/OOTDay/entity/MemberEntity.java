@@ -29,8 +29,10 @@ public class MemberEntity {
     @Column(nullable = false)
     private String password; // 비밀번호
 
+    /*
     @Column(name = "agree")
     private boolean agree; // 약관 동의 여부
+     */
 
     /*
     @Column(length = 255)

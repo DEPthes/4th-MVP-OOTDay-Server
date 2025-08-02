@@ -13,4 +13,7 @@ public interface MemberRepository  extends JpaRepository<MemberEntity, UUID> {
 
     // memberId 중복 확인
     boolean existsByMemberId(String memberId);
+
+    // phoneNumber 조회
+    Optional<MemberEntity> findByPhoneNumber(String phoneNumber);
 }

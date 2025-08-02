@@ -1,10 +1,7 @@
 package TOTs.OOTDay.controller;
 
 
-import TOTs.OOTDay.dto.MemberJoinDTO;
-import TOTs.OOTDay.dto.MemberLoginDTO;
-import TOTs.OOTDay.dto.MemberLoginResponseDTO;
-import TOTs.OOTDay.dto.MemberWithdrawDTO;
+import TOTs.OOTDay.dto.*;
 import TOTs.OOTDay.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +45,12 @@ public class MemberController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         return ResponseEntity.ok("로그아웃");
+    }
+
+    // 인증 후 아이디/비밀번호 찾기
+    @PostMapping("/find-account")
+    public ResponseEntity<String> findAccount(@RequestBody FIndAccountRequestDTO dto) {
+        String result = memberService.findAccount(dto);
+        return ResponseEntity.ok(result);
     }
 }
