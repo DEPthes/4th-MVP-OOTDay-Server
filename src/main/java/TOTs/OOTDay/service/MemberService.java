@@ -1,6 +1,7 @@
 package TOTs.OOTDay.service;
 
 import TOTs.OOTDay.config.JwtUtil;
+import TOTs.OOTDay.dto.FIndAccountRequestDTO;
 import TOTs.OOTDay.dto.MemberJoinDTO;
 import TOTs.OOTDay.dto.MemberLoginDTO;
 import TOTs.OOTDay.dto.MemberWithdrawDTO;
@@ -32,7 +33,7 @@ public class MemberService {
             throw new IllegalArgumentException("전화번호는 01012345678같은 형식이어야 해요.");
         }
 
-        if (!smsService.isVerified(dto.getPhoneNumber())) {
+        if (!smsService.isSignupVerified(dto.getPhoneNumber())) {
             throw new IllegalArgumentException("휴대폰 번호 인증이 필요합니다.");
         }
 
@@ -54,19 +55,21 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        /*
         if (!dto.isAgree()) {
             throw new IllegalArgumentException("이용약관에 동의해야 합니다.");
         }
+         */
 
         MemberEntity entity = MemberEntity.builder()
                 .name(dto.getName())
                 .phoneNumber(dto.getPhoneNumber())
                 .memberId(dto.getMemberId())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .agree(dto.isAgree())
+                //.agree(dto.isAgree())
                 .build();
 
-        smsService.clearVerified(dto.getPhoneNumber());
+        smsService.clearSignupVerification(dto.getPhoneNumber());
 
         return memberRepository.save(entity).getId();
     }
@@ -101,4 +104,26 @@ public class MemberService {
         memberRepository.delete(member); // DB에서 회원 삭제
 
     }
+
+    // 아이디/회원가입 찾기 시
+    public String findAccount(FIndAccountRequestDTO dto) {
+        // 1. 아이디/비밀번호 찾기용 휴대폰 인증 체크
+        if (!smsService.isFindAccountVerified(dto.getPhoneNumber())) {
+            throw new IllegalArgumentException("휴대폰 인증이 필요합니다.");
+        }
+
+        // 2. 회원 정보 조회
+        MemberEntity member = memberRepository.findByPhoneNumber(dto.getPhoneNumber())
+                .orElseThrow(() -> new IllegalArgumentException("등록된 회원이 없습니다."));
+
+        // 3. 요청 타입에 따라 아이디 또는 비밀번호 반환
+        if ("id".equals(dto.getType())) {
+            return member.getMemberId();
+        } else if ("password".equals(dto.getType())) {
+            return member.getPassword();
+        } else {
+            throw new IllegalArgumentException("'id' 또는 'password'여야 합니다.");
+        }
+    }
+
 }
