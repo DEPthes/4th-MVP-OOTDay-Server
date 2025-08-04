@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -47,10 +48,19 @@ public class MemberController {
         return ResponseEntity.ok("로그아웃");
     }
 
-    // 인증 후 아이디/비밀번호 찾기
-    @PostMapping("/find-account")
-    public ResponseEntity<String> findAccount(@RequestBody FIndAccountRequestDTO dto) {
-        String result = memberService.findAccount(dto);
-        return ResponseEntity.ok(result);
+    // 아이디 찾기
+    @PostMapping("/find-id")
+    public ResponseEntity<String> findId(@RequestBody Map<String, String> request) {
+        String phoneNumber = request.get("phoneNumber");
+        return ResponseEntity.ok(memberService.findId(phoneNumber));
+    }
+
+    // 비밀번호 재설정
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
+        String phoneNumber = request.get("phoneNumber");
+        String newPassword = request.get("newPassword");
+        memberService.resetPassword(phoneNumber, newPassword);
+        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
     }
 }

@@ -105,25 +105,40 @@ public class MemberService {
 
     }
 
-    // 아이디/회원가입 찾기 시
-    public String findAccount(FIndAccountRequestDTO dto) {
-        // 1. 아이디/비밀번호 찾기용 휴대폰 인증 체크
-        if (!smsService.isFindAccountVerified(dto.getPhoneNumber())) {
+    // 아이디 찾기
+    public String findId(String phoneNumber) {
+        if(!smsService.isFindAccountVerified(phoneNumber)) {
             throw new IllegalArgumentException("휴대폰 인증이 필요합니다.");
         }
 
-        // 2. 회원 정보 조회
-        MemberEntity member = memberRepository.findByPhoneNumber(dto.getPhoneNumber())
+        MemberEntity member = memberRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new IllegalArgumentException("등록된 회원이 없습니다."));
 
-        // 3. 요청 타입에 따라 아이디 또는 비밀번호 반환
-        if ("id".equals(dto.getType())) {
-            return member.getMemberId();
-        } else if ("password".equals(dto.getType())) {
-            return member.getPassword();
-        } else {
-            throw new IllegalArgumentException("'id' 또는 'password'여야 합니다.");
-        }
+        return member.getMemberId();
     }
 
+    // 비밀번호 재설정
+    public void resetPassword(String phoneNumber, String newPassword) {
+        if(!smsService.isFindAccountVerified(phoneNumber)) {
+            throw new IllegalArgumentException("휴대폰 인증이 필요합니다.");
+        }
+
+        MemberEntity member = memberRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new IllegalArgumentException("등록된 회원이 없습니다."));
+
+        // 새 비밀번호가 이전 비밀번호와 같은지
+        if(passwordEncoder.matches(newPassword, member.getPassword())) {
+            throw new IllegalArgumentException("이전 비밀번호와 다른 비밀번호를 사용해야 합니다.");
+        }
+
+        // 새 비밀번호 유효성 검사
+        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,16}$")) {
+            throw new IllegalArgumentException("비밀번호는 8~16자이며 영어, 숫자, 특수문자를 모두 포함해야 해요.");
+        }
+
+        member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+
+        smsService.clearFindAccountVerification(phoneNumber);
+    }
 }
