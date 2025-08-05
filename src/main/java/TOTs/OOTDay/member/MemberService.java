@@ -1,12 +1,8 @@
-package TOTs.OOTDay.service;
+package TOTs.OOTDay.member;
 
 import TOTs.OOTDay.config.JwtUtil;
-import TOTs.OOTDay.dto.FIndAccountRequestDTO;
-import TOTs.OOTDay.dto.MemberJoinDTO;
-import TOTs.OOTDay.dto.MemberLoginDTO;
-import TOTs.OOTDay.dto.MemberWithdrawDTO;
-import TOTs.OOTDay.entity.MemberEntity;
-import TOTs.OOTDay.repository.MemberRepository;
+import TOTs.OOTDay.sms.SmsService;
+import TOTs.OOTDay.sms.ResetPasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -114,31 +110,50 @@ public class MemberService {
         MemberEntity member = memberRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new IllegalArgumentException("등록된 회원이 없습니다."));
 
+        smsService.clearFindAccountVerification(phoneNumber);
         return member.getMemberId();
     }
 
-    // 비밀번호 재설정
-    public void resetPassword(String phoneNumber, String newPassword) {
-        if(!smsService.isFindAccountVerified(phoneNumber)) {
+    // 아이디와 휴대폰 번호가 일치하는지
+    public void sendResetPasswordCode(String memberId, String phoneNumber) {
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+
+        if(!member.getPhoneNumber().equals(phoneNumber)) {
+            throw new IllegalArgumentException("아이디와 휴대폰 번호가 일치하지 않습니다.");
+        }
+
+        // 인증번호 전송
+        smsService.sendFindAccountVerificationCode(phoneNumber);
+    }
+
+    // 휴대폰 번호 인증 후 비밀번호 재설정
+    public void resetPassword(ResetPasswordRequestDTO dto) {
+        if(!smsService.isFindAccountVerified(dto.getPhoneNumber())) {
             throw new IllegalArgumentException("휴대폰 인증이 필요합니다.");
         }
 
-        MemberEntity member = memberRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new IllegalArgumentException("등록된 회원이 없습니다."));
+        MemberEntity member = memberRepository.findByMemberId(dto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
-        // 새 비밀번호가 이전 비밀번호와 같은지
-        if(passwordEncoder.matches(newPassword, member.getPassword())) {
-            throw new IllegalArgumentException("이전 비밀번호와 다른 비밀번호를 사용해야 합니다.");
+        if(!member.getPhoneNumber().equals(dto.getPhoneNumber())) {
+            throw new IllegalArgumentException("아이디와 휴대폰 번호가 일치하지 않습니다.");
         }
 
-        // 새 비밀번호 유효성 검사
-        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,16}$")) {
-            throw new IllegalArgumentException("비밀번호는 8~16자이며 영어, 숫자, 특수문자를 모두 포함해야 해요.");
+        if(!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        member.setPassword(passwordEncoder.encode(newPassword));
+        if(passwordEncoder.matches(dto.getNewPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("이전 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
+        }
+
+        // 재설정 비밀번호 암호화
+        member.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         memberRepository.save(member);
 
-        smsService.clearFindAccountVerification(phoneNumber);
+        // 인증 정보 삭제
+        smsService.clearFindAccountVerification(dto.getPhoneNumber());
+
     }
 }

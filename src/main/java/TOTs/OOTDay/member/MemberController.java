@@ -1,8 +1,6 @@
-package TOTs.OOTDay.controller;
+package TOTs.OOTDay.member;
 
 
-import TOTs.OOTDay.dto.*;
-import TOTs.OOTDay.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -53,14 +51,5 @@ public class MemberController {
     public ResponseEntity<String> findId(@RequestBody Map<String, String> request) {
         String phoneNumber = request.get("phoneNumber");
         return ResponseEntity.ok(memberService.findId(phoneNumber));
-    }
-
-    // 비밀번호 재설정
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
-        String phoneNumber = request.get("phoneNumber");
-        String newPassword = request.get("newPassword");
-        memberService.resetPassword(phoneNumber, newPassword);
-        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
     }
 }

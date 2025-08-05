@@ -1,4 +1,4 @@
-package TOTs.OOTDay.dto;
+package TOTs.OOTDay.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

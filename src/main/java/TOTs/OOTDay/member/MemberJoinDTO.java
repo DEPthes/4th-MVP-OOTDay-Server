@@ -1,6 +1,5 @@
-package TOTs.OOTDay.dto;
+package TOTs.OOTDay.member;
 
-import TOTs.OOTDay.entity.MemberEntity;
 import lombok.*;
 
 //회원가입 요청 데이터
