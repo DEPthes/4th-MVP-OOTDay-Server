@@ -1,6 +1,7 @@
 package TOTs.OOTDay.member;
 
 import TOTs.OOTDay.config.JwtUtil;
+import TOTs.OOTDay.member.DTO.*;
 import TOTs.OOTDay.sms.SmsService;
 import TOTs.OOTDay.sms.ResetPasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +86,16 @@ public class MemberService {
         return JwtUtil.generateToken(member.getMemberId());
     }
 
+    // 설문
+    public void updateSurvey(String token, SurveyDTO dto) {
+        String memberId = JwtUtil.getMemberIdFromToken(token);
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        member.setGender(MemberEntity.Gender.valueOf(dto.getGender()));
+        member.setPersonalColor(MemberEntity.PersonalColor.valueOf(dto.getPersonalColor()));
+        memberRepository.save(member);
+    }
+
     // 회원탈퇴
     public void withdraw(MemberWithdrawDTO dto, String token) {
         String memberId = JwtUtil.getMemberIdFromToken(token);
@@ -92,9 +103,15 @@ public class MemberService {
         MemberEntity member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
+        /*
         // 비밀번호 일치 확인
         if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        */
+
+        if(!dto.isAgree()) {
+            throw new IllegalArgumentException("유의사항에 동의해야 탈퇴가 가능합니다.");
         }
 
         memberRepository.delete(member); // DB에서 회원 삭제
@@ -154,6 +171,35 @@ public class MemberService {
 
         // 인증 정보 삭제
         smsService.clearFindAccountVerification(dto.getPhoneNumber());
+    }
 
+    // 프로필 업데이트
+    public ProfileDTO getProfile(String token) {
+        String memberId = JwtUtil.getMemberIdFromToken(token);
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        ProfileDTO dto = new ProfileDTO();
+        dto.setName(member.getName());
+        dto.setMemberId(member.getMemberId());
+        dto.setGender(member.getGender() != null ? member.getGender().name() : null);
+        dto.setPersonalColor(member.getPersonalColor() != null ? member.getPersonalColor().name() : null);
+        return dto;
+    }
+
+    // 프로필 업데이트
+    public void updateProfile(String token, ProfileUpdateDTO dto) {
+        String memberId = JwtUtil.getMemberIdFromToken(token);
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        if(dto.getGender() != null) {
+            member.setGender(MemberEntity.Gender.valueOf(dto.getGender()));
+        }
+        if(dto.getPersonalColor() != null) {
+            member.setPersonalColor(MemberEntity.PersonalColor.valueOf(dto.getPersonalColor()));
+        }
+
+        memberRepository.save(member);
     }
 }
