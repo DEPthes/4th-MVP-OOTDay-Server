@@ -1,4 +1,4 @@
-package TOTs.OOTDay.dto;
+package TOTs.OOTDay.member;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class FIndAccountRequestDTO {
     private String phoneNumber;
-    private String type; // id인지 password인지
 }

@@ -1,13 +1,12 @@
-package TOTs.OOTDay.controller;
+package TOTs.OOTDay.member;
 
 
-import TOTs.OOTDay.dto.*;
-import TOTs.OOTDay.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -47,10 +46,10 @@ public class MemberController {
         return ResponseEntity.ok("로그아웃");
     }
 
-    // 인증 후 아이디/비밀번호 찾기
-    @PostMapping("/find-account")
-    public ResponseEntity<String> findAccount(@RequestBody FIndAccountRequestDTO dto) {
-        String result = memberService.findAccount(dto);
-        return ResponseEntity.ok(result);
+    // 아이디 찾기
+    @PostMapping("/find-id")
+    public ResponseEntity<String> findId(@RequestBody Map<String, String> request) {
+        String phoneNumber = request.get("phoneNumber");
+        return ResponseEntity.ok(memberService.findId(phoneNumber));
     }
 }

@@ -1,4 +1,4 @@
-package TOTs.OOTDay.service;
+package TOTs.OOTDay.sms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -95,17 +95,7 @@ public class SmsService {
         boolean isCorrect = inputCode.equals(savedCode);
         if (isCorrect) {
             signupVerifiedPhoneMap.put(phoneNumber, true);
-        }
-        return isCorrect;
-    }
-
-    // 아이디/비밀번호 찾기 시 인증번호 검증
-    public boolean verifyFindAccountCode(String phoneNumber, String inputCode) {
-        String savedCode = findAccountVerificationMap.get(phoneNumber);
-        boolean isCorrect = inputCode.equals(savedCode);
-        if (isCorrect) {
-            findAccountVerifiedPhoneMap.put(phoneNumber, true);
-            clearFindAccountVerification(phoneNumber);
+            signupVerificationMap.remove(phoneNumber);
         }
         return isCorrect;
     }
@@ -115,20 +105,31 @@ public class SmsService {
         return signupVerifiedPhoneMap.getOrDefault(phoneNumber, false);
     }
 
-    // 아이디/비밀번호 찾기 시 인증 여부 확인
-    public boolean isFindAccountVerified(String phoneNumber) {
-        return findAccountVerifiedPhoneMap.getOrDefault(phoneNumber, false);
-    }
-
     // 회원가입 완료 후 인증상태 및 코드 삭제 (중복 가입/보안)
     public void clearSignupVerification(String phoneNumber) {
         signupVerifiedPhoneMap.remove(phoneNumber);
         signupVerificationMap.remove(phoneNumber);
     }
 
+    // 아이디/비밀번호 찾기 시 인증번호 검증
+    public boolean verifyFindAccountCode(String phoneNumber, String inputCode) {
+        String savedCode = findAccountVerificationMap.get(phoneNumber);
+        boolean isCorrect = inputCode.equals(savedCode);
+        if (isCorrect) {
+            findAccountVerifiedPhoneMap.put(phoneNumber, true);
+            findAccountVerificationMap.remove(phoneNumber);
+        }
+        return isCorrect;
+    }
+
+    // 아이디/비밀번호 찾기 시 인증 여부 확인
+    public boolean isFindAccountVerified(String phoneNumber) {
+        return findAccountVerifiedPhoneMap.getOrDefault(phoneNumber, false);
+    }
+
     // 아이디/비밀번호 찾기 인증 완료 후 코드 삭제
     public void clearFindAccountVerification(String phoneNumber) {
-        signupVerifiedPhoneMap.remove(phoneNumber);
-        signupVerificationMap.remove(phoneNumber);
+        findAccountVerifiedPhoneMap.remove(phoneNumber);
+        findAccountVerificationMap.remove(phoneNumber);
     }
 }
