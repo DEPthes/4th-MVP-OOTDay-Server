@@ -3,7 +3,7 @@ name: CI on Pull Request
 on:
   pull_request:
     branches:
-      - main  
+      - main
 
 jobs:
   build:
@@ -18,6 +18,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'gradle'
+
+      - name: Create application.yml
+        run: |
+          mkdir -p src/main/resources/
+          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+        env:
+          APPLICATION_YML: ${{ secrets.APPLICATION_YML }}
 
       - name: Build with Gradle
         run: ./gradlew clean build
