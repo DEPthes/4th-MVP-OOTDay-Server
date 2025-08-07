@@ -17,6 +17,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ~/app
+            cd ~/app/4th-MVP-OOTDay-Server
             git pull origin main
             ./gradlew clean build -x test
