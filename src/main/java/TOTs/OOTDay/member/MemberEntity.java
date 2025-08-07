@@ -45,6 +45,9 @@ public class MemberEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender; // 성별
 
+    @Enumerated(EnumType.STRING) // 퍼스널 컬러 추가
+    private PersonalColor personalColor;
+
     @Column(name = "create_at")
     private LocalDateTime createdAt; // 생성 시간
 
@@ -64,5 +67,9 @@ public class MemberEntity {
 
     public enum Gender {
         MALE, FEMALE
+    }
+
+    public enum PersonalColor {
+        SPRING, SUMMER, AUTUMN, WINTER
     }
 }
