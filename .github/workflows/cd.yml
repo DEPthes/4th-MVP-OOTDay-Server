@@ -20,3 +20,4 @@ jobs:
             cd ~/app/4th-MVP-OOTDay-Server
             git pull origin main
             ./gradlew clean build -x test
+            nohup java -jar build/libs/*.jar > app.log 2>&1 &
