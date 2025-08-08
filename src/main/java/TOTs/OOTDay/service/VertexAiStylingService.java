@@ -27,6 +27,7 @@ public class VertexAiStylingService {
 
             List<Part> parts = new ArrayList<>();
 
+            //프롬프트 요청사항 작성
             parts.add(Part.newBuilder()
                     .setText(
                             "아래의 옷 사진들로 만들 수 있는 3가지 다른 코디를 추천해줘. " +
@@ -36,6 +37,7 @@ public class VertexAiStylingService {
                     )
                     .build());
 
+            //프롬프트에 엔티티 uuid, name 그리고 이미지 넣기
             for (ClothingRequest request : imageList) {
                 parts.add(Part.newBuilder()
                         .setText("uuid: " + request.getUuid() + ", name: " + request.getName())
@@ -54,6 +56,7 @@ public class VertexAiStylingService {
                 }
             }
 
+            //ai 에게 프롬프트 보내기
             Content content = Content.newBuilder()
                     .setRole("user")
                     .addAllParts(parts)
@@ -61,9 +64,9 @@ public class VertexAiStylingService {
 
             GenerateContentResponse response = model.generateContent(content);
 
-            System.out.println("====response====\n" + response);
+            //반환값(json) List<List<String>>으로 가공
             ObjectMapper objectMapper = new ObjectMapper();
-            String jsonText = response.getCandidates(0).getContent().getParts(0).getText(); // ✅ 응답에서 텍스트만 추출
+            String jsonText = response.getCandidates(0).getContent().getParts(0).getText();
             String json = extractJsonFromGeminiResponse(jsonText);
 
             List<List<String>> parsedOutfits;
@@ -73,8 +76,11 @@ public class VertexAiStylingService {
                 throw new RuntimeException("AI 응답 JSON 파싱 실패: " + json, e);
             }
 
-            System.out.println("===========\n" + parsedOutfits.toString());
-            // ✅ ClothingRequest 매핑
+            /*
+            ai 에게 받은 응답값(String 형식의 Json)을 실제 이미지 url이 들어있는 엔티티와 비교해서 찾기 -> uuid를 통해
+            **응답받은 코디와 실제 이미지를 매칭하는 과정**
+            반환은 ClothingRequest DTO를 사용(안에 s3url을 통해 이미지 불러오기 가능)
+             */
             List<List<ClothingRequest>> result = new ArrayList<>();
 
             for (List<String> parsedOutfit : parsedOutfits) {
@@ -94,7 +100,7 @@ public class VertexAiStylingService {
     }
 
 
-    private String extractJsonFromGeminiResponse(String response) {//gemini 응답값에 백틱이 발생해 json을 찾지 못하는 오류로 인하여 백틱 제거 메서드 추가
+    private String extractJsonFromGeminiResponse(String response) {//응답값에 백틱이 발생해 json을 찾지 못하는 오류로 인하여 백틱 제거 메서드 추가
         int start = response.indexOf("```json");
         int end = response.lastIndexOf("```");
 
