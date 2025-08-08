@@ -29,11 +29,14 @@ public class Cloth {
 
     private String name; //사진 이름
 
-    private String category; //상의와 하의등 카테고리 분류
+    @Enumerated(EnumType.STRING)
+    private ClothCategory category; //상의와 하의등 카테고리 분류
 
     private String mood; //캐주얼 스트릿 등 무드
 
     private String description;//옷에 대한 간단한 설명
+
+    private String imageUrl;
 
     public Cloth() {
 
