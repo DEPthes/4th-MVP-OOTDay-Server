@@ -1,7 +1,7 @@
 package TOTs.OOTDay.controller;
 
 import TOTs.OOTDay.domain.ClothingRequest;
-import TOTs.OOTDay.service.GenAiStylingService;
+import TOTs.OOTDay.service.VertexAiStylingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/styling")
 public class StylingController {
 
-    private final GenAiStylingService service;
+    private final VertexAiStylingService service;
 
     @PostMapping
     public ResponseEntity<List<List<ClothingRequest>>> stylingCloth(@RequestBody List<ClothingRequest> imageList) {
