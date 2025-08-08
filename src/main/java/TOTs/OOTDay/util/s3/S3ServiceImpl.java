@@ -55,7 +55,7 @@ public class S3ServiceImpl implements S3Service{
             log.info("[S3에 동일한 파일 존재. 업로드 생략] key: {}", fileUrl);
         }
 
-        return cloudFrontUrl + "/" + fileUrl;
+        return cloudFrontUrl + fileUrl;
     }
 
     @Override
