@@ -36,7 +36,7 @@ public class ClothService {
                 .build();
         temp.generateUuid();
 
-        // s3 에 이미지 저장 코드...?
+        // s3 에 이미지 저장 코드
         String imageUrl = s3Service.uploadFile(file, S3DomainType.CLOTHES, temp.getUuid());
 
         Cloth cloth = Cloth.builder()
@@ -64,6 +64,14 @@ public class ClothService {
 
     @Transactional
     public void deleteCloth(UUID uuid) {
+
+        //s3 이미지 파일 삭제
+        Cloth cloth = clothRepository.findByUuid(uuid);
+        String imageUrl = cloth.getImageUrl();
+        String[] split = imageUrl.split("/");
+        String prefix = split[split.length - 4] + "/" + split[split.length - 3] + "/" + split[split.length - 2];
+        s3Service.deleteFolder(prefix);
+
         clothRepository.deleteByUuid(uuid);
     }
 
