@@ -11,9 +11,10 @@ public class ClothingRequest { //dto
 
     private UUID uuid;
     private String name;
-    private String category;
+    private ClothCategory category;
     private String mood;
     private String description;
+    private String imageUrl;
 
     public ClothingRequest() {
     }
