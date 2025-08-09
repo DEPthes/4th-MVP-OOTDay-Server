@@ -22,7 +22,7 @@ public class ClothController {
     private final OpenAiService geminiService;
 
     @PostMapping
-    // 사진 받아서 gemini 한테 보낸 후 받은 정보들을 db에 저장(사진도 일단 clothService 서비스에 같이 보냄)
+    // 사진 받아서 gemini 한테 보낸 후 받은 정보들을 db에 저장
     public ResponseEntity<Cloth> uploadCloth(@RequestPart("image") MultipartFile image) throws IOException {
         ClothingRequest geminiInfo = geminiService.analyzeCloth(image);
 

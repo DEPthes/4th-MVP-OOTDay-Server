@@ -36,7 +36,7 @@ public class Cloth {
 
     private String description;//옷에 대한 간단한 설명
 
-    private String imageUrl;
+    private String imageUrl;//s3 이미지 url
 
     public Cloth() {
 
