@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface ClothRepository extends JpaRepository<Cloth,Long> {
     void deleteByUuid(UUID uuid);
+
+    Cloth findByUuid(UUID uuid);
 }
