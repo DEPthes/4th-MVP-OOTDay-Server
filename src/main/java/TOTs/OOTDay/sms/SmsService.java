@@ -1,14 +1,12 @@
 package TOTs.OOTDay.sms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,14 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class SmsService {
 
-    @Value("${solapi.apiKey}")
-    private String apiKey;
-
-    @Value("${solapi.apiSecret}")
-    private String apiSecret;
-
     @Value("${solapi.sender}")
     private String sender;
+
+    private final DefaultMessageService messageService;
 
     // 회원가입 인증번호 저장
     private final Map<String, String> signupVerificationMap = new ConcurrentHashMap<>(); // 인증번호 임시 저장
@@ -33,8 +27,6 @@ public class SmsService {
     // 아이디/비밀번호 찾기 인증번호
     private final Map<String, String> findAccountVerificationMap = new ConcurrentHashMap<>();
     private final Map<String, Boolean> findAccountVerifiedPhoneMap = new ConcurrentHashMap<>();
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     // 인증번호 생성
     private String generateCode() {
@@ -45,49 +37,56 @@ public class SmsService {
     public void sendSignupVerificationCode(String phoneNumber) {
         String code = generateCode();
         signupVerificationMap.put(phoneNumber, code); // 코드 저장
-        sendSms(phoneNumber, code);
+        sendSms(phoneNumber, "[OOTDay] 인증번호 : " + code);
     }
 
     // 아이디/비밀번호 찾기 시 인증번호 전송
     public void sendFindAccountVerificationCode(String phoneNumber) {
         String code = generateCode();
         findAccountVerificationMap.put(phoneNumber, code);
-        sendSms(phoneNumber, code);
+        sendSms(phoneNumber, "[OOTDay] 인증번호 : " + code);
     }
-
+/*
     // 메시지 전송
-    private void sendSms(String phoneNumber, String code){
-
+    private void sendSms(String to, String text){
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + apiKey);
+            // 메시지 객체 생성
+            Message message = new Message(); // 메시지 인스턴스
+            message.setFrom(sender); // 발신번호
+            message.setTo(to); // 수신번호
+            message.setText(text); // 메시지 내용
 
-            // 요청 바디
-            Map<String, Object> body = Map.of(
-                    "messages", List.of(Map.of(
-                            "to", phoneNumber,      // 수신자
-                            "from", sender,         // 발신자
-                            "text", "[OOTDay] 인증번호: " + code
-                    ))
-            );
+            // 요청 객체
+            SingleMessageSendingRequest request = new SingleMessageSendingRequest(message);
 
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println("[DEBUG] JSON Body: " + mapper.writeValueAsString(body));
+            //SDK 호출 -> 실제 발송
+            SingleMessageSentResponse response = messageService.sendOne(request);
 
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-
-            restTemplate.exchange(
-                    URI.create("https://api.solapi.com/messages/v4/send"),
-                    HttpMethod.POST,
-                    request,
-                    String.class
-            );
-
+            // 확인
+            System.out.println("[Solapi] : " + response.getMessageId() + ", status : " + response.getStatusMessage()); // 확인 해봐야함.
         } catch (Exception e) {
-            throw new RuntimeException("문자 전송 실패", e);
+            throw new RuntimeException("문자 전송 실패 : " + e.getMessage(), e);
         }
     }
+    */
+
+    // 메시지로 전송
+    private void sendSms(String to, String text) {
+        try {
+            Message m = new Message();
+            m.setFrom(sender != null ? sender.replaceAll("\\D", "") : null);
+            m.setTo(to != null ? to.replaceAll("\\D", "") : null);
+            m.setText(text);
+
+            var res = messageService.sendOne(new SingleMessageSendingRequest(m));
+            System.out.println("[Solapi] = " + res.getMessageId() + ", status = " + res.getStatusMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("문자 전송 실패: " + e.getMessage(), e);
+        }
+    }
+
+
 
     // 회원가입 시 인증번호 검증
     public boolean verifySignupCode(String phoneNumber, String inputCode) {

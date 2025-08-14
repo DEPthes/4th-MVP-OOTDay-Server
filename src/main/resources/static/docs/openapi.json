@@ -1,134 +1,16 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
-    "title": "OOTDay User API",
-    "version": "1.0",
-    "description": "회원가입, 로그인, 인증, 탈퇴, 로그아웃 관련 API 문서"
+    "title": "OOTDay API",
+    "version": "1.0.0",
+    "description": "OpenAPI 3.0 specification for OOTDay server based on provided Spring Boot code."
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://localhost:8080",
+      "description": "Local development server"
     }
   ],
-  "paths": {
-    "/sms/send": {
-      "post": {
-        "summary": "휴대폰 인증번호 전송",
-        "tags": ["SMS"],
-        "parameters": [
-          {
-            "name": "phoneNumber",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "인증받을 전화번호 (01012345678 형식)"
-          }
-        ],
-        "responses": {
-          "200": { "description": "인증번호 전송 성공" },
-          "400": { "description": "잘못된 요청" }
-        }
-      }
-    },
-    "/sms/verify": {
-      "post": {
-        "summary": "인증번호 검증",
-        "tags": ["SMS"],
-        "parameters": [
-          {
-            "name": "phoneNumber",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "code",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": { "description": "인증 성공/실패" }
-        }
-      }
-    },
-    "/api/members/join": {
-      "post": {
-        "summary": "회원가입",
-        "tags": ["Member"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/MemberJoinDTO" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "회원가입 성공 (UUID 반환)",
-            "content": {
-              "application/json": {
-                "schema": { "type": "string" }
-              }
-            }
-          },
-          "400": { "description": "입력값 오류" }
-        }
-      }
-    },
-    "/api/members/login": {
-      "post": {
-        "summary": "로그인",
-        "tags": ["Member"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/MemberLoginDTO" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "로그인 성공 (JWT 토큰 반환)",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/MemberLoginResponseDTO" }
-              }
-            }
-          },
-          "400": { "description": "로그인 실패" }
-        }
-      }
-    },
-    "/api/members/withdraw": {
-      "post": {
-        "summary": "회원탈퇴",
-        "tags": ["Member"],
-        "security": [
-          { "bearerAuth": [] }
-        ],
-        "responses": {
-          "200": { "description": "회원탈퇴 성공" },
-          "401": { "description": "인증 필요 또는 실패" }
-        }
-      }
-    },
-    "/api/members/logout": {
-      "post": {
-        "summary": "로그아웃",
-        "tags": ["Member"],
-        "security": [
-          { "bearerAuth": [] }
-        ],
-        "responses": {
-          "200": { "description": "로그아웃 성공" }
-        }
-      }
-    }
-  },
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -138,34 +20,617 @@
       }
     },
     "schemas": {
+      "UUID": {
+        "type": "string",
+        "format": "uuid",
+        "example": "550e8400-e29b-41d4-a716-446655440000"
+      },
       "MemberJoinDTO": {
         "type": "object",
+        "required": [
+          "name",
+          "phoneNumber",
+          "memberId",
+          "password",
+          "confirmPassword"
+        ],
         "properties": {
-          "name": { "type": "string" },
-          "phoneNumber": { "type": "string" },
-          "memberId": { "type": "string" },
-          "password": { "type": "string" },
-          "confirmPassword": { "type": "string" },
-          "gender": {
+          "name": {
             "type": "string",
-            "enum": ["MALE", "FEMALE"]
+            "example": "홍길동"
           },
-          "agree": { "type": "boolean" }
-        },
-        "required": ["name", "phoneNumber", "memberId", "password", "confirmPassword", "gender", "agree"]
+          "phoneNumber": {
+            "type": "string",
+            "example": "01012345678"
+          },
+          "memberId": {
+            "type": "string",
+            "example": "gildong01"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "P@ssw0rd!"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "format": "password",
+            "example": "P@ssw0rd!"
+          }
+        }
       },
       "MemberLoginDTO": {
         "type": "object",
+        "required": [
+          "memberId",
+          "password"
+        ],
         "properties": {
-          "memberId": { "type": "string" },
-          "password": { "type": "string" }
-        },
-        "required": ["memberId", "password"]
+          "memberId": {
+            "type": "string",
+            "example": "gildong01"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "P@ssw0rd!"
+          }
+        }
       },
       "MemberLoginResponseDTO": {
         "type": "object",
         "properties": {
-          "token": { "type": "string" }
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "SurveyDTO": {
+        "type": "object",
+        "required": [
+          "gender",
+          "personalColor"
+        ],
+        "properties": {
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ],
+            "example": "MALE"
+          },
+          "personalColor": {
+            "type": "string",
+            "enum": [
+              "SPRING",
+              "SUMMER",
+              "AUTUMN",
+              "WINTER"
+            ],
+            "example": "SPRING"
+          }
+        }
+      },
+      "MemberWithdrawDTO": {
+        "type": "object",
+        "required": [
+          "agree"
+        ],
+        "properties": {
+          "agree": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ProfileDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "홍길동"
+          },
+          "memberId": {
+            "type": "string",
+            "example": "gildong01"
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ]
+          },
+          "personalColor": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "SPRING",
+              "SUMMER",
+              "AUTUMN",
+              "WINTER"
+            ]
+          }
+        }
+      },
+      "ProfileUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ]
+          },
+          "personalColor": {
+            "type": "string",
+            "enum": [
+              "SPRING",
+              "SUMMER",
+              "AUTUMN",
+              "WINTER"
+            ]
+          }
+        }
+      },
+      "ResetPasswordSendCodeDTO": {
+        "type": "object",
+        "required": [
+          "memberId",
+          "phoneNumber"
+        ],
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "example": "gildong01"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "01012345678"
+          }
+        }
+      },
+      "ResetPasswordRequestDTO": {
+        "type": "object",
+        "required": [
+          "memberId",
+          "phoneNumber",
+          "newPassword",
+          "confirmPassword"
+        ],
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "example": "gildong01"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "01012345678"
+          },
+          "newPassword": {
+            "type": "string",
+            "format": "password",
+            "example": "NewP@ss1!"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "format": "password",
+            "example": "NewP@ss1!"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/members/join": {
+      "post": {
+        "summary": "회원가입",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberJoinDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "가입 성공, UUID 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UUID"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/login": {
+      "post": {
+        "summary": "로그인",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberLoginDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberLoginResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/survey": {
+      "post": {
+        "summary": "설문 저장",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "저장 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/withdraw": {
+      "delete": {
+        "summary": "회원 탈퇴",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberWithdrawDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "탈퇴 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/logout": {
+      "post": {
+        "summary": "로그아웃",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "로그아웃 메시지",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/find-id": {
+      "post": {
+        "summary": "아이디 찾기",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "01012345678"
+                  }
+                },
+                "required": [
+                  "phoneNumber"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "아이디 문자열",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/profile": {
+      "get": {
+        "summary": "내 프로필 조회",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "프로필",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members/update-profile": {
+      "patch": {
+        "summary": "프로필 수정",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sms/send": {
+      "post": {
+        "summary": "회원가입 인증번호 전송",
+        "parameters": [
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "인증번호 전송 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sms/verify": {
+      "post": {
+        "summary": "회원가입 인증번호 검증",
+        "parameters": [
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "검증 결과",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sms/send/find-id": {
+      "post": {
+        "summary": "아이디 찾기 인증번호 전송",
+        "parameters": [
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "인증번호 전송 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sms/verify/find-account": {
+      "post": {
+        "summary": "아이디/비밀번호 찾기 인증번호 검증",
+        "parameters": [
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "검증 결과",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sms/send/reset-password": {
+      "post": {
+        "summary": "비밀번호 재설정 인증번호 전송",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordSendCodeDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "전송 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sms/reset-password": {
+      "post": {
+        "summary": "비밀번호 재설정",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "재설정 성공",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       }
     }

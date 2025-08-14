@@ -2,6 +2,7 @@ package TOTs.OOTDay.sms;
 
 import TOTs.OOTDay.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 public class SmsController {
     private final SmsService smsService;
     private final MemberService memberService;
+
+    private final DefaultMessageService messageService;
 
     // 회원가입 시 인증번호 전송 요청
     @PostMapping("/send")
