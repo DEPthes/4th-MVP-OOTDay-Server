@@ -1,6 +1,8 @@
 package TOTs.OOTDay.service;
 
 import TOTs.OOTDay.domain.ClothingRequest;
+import TOTs.OOTDay.util.stylingoption.domain.MoodDto;
+import TOTs.OOTDay.util.stylingoption.domain.PlaceDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.vertexai.VertexAI;
@@ -20,18 +22,26 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class VertexAiStylingService {
-    public List<List<ClothingRequest>> styleCloth(List<ClothingRequest> imageList) throws IOException {
+    public List<List<ClothingRequest>> styleCloth(List<ClothingRequest> imageList, List<MoodDto> moodDtoList, PlaceDto placeDto) throws IOException {
 
         try (VertexAI vertexAI = new VertexAI("api-test-466115", "us-central1")) {
             GenerativeModel model = new GenerativeModel("gemini-2.0-flash-001", vertexAI);
 
             List<Part> parts = new ArrayList<>();
 
+            //moodList String 으로 변환
+            StringBuilder sb = new StringBuilder();
+            for (MoodDto moodDto : moodDtoList) {
+                sb.append(moodDto.getMoodName()).append(",");
+            }
+            String mood = sb.deleteCharAt(sb.length() - 1).toString();
+
             //프롬프트 요청사항 작성
             parts.add(Part.newBuilder()
                     .setText(
                             "아래의 옷 사진들로 만들 수 있는 3가지 다른 코디를 추천해줘. " +
                                     "각 코디는 옷의 uuid와 name을 함께 고려해서 구성해줘. " +
+                                    "다음과 같은 mood도 고려해줘:" + mood + "\n그리고 다음 장소도 고려해줘:" + placeDto + "\n" +
                                     "결과는 다음 형식의 JSON 배열로 줘:\n" +
                                     "[[\"a1b2c3_uuid\", \"b4d5e6_uuid\"], [\"...\", \"...\"]]"
                     )
@@ -71,7 +81,8 @@ public class VertexAiStylingService {
 
             List<List<String>> parsedOutfits;
             try {
-                parsedOutfits = objectMapper.readValue(json, new TypeReference<>() {});
+                parsedOutfits = objectMapper.readValue(json, new TypeReference<>() {
+                });
             } catch (Exception e) {
                 throw new RuntimeException("AI 응답 JSON 파싱 실패: " + json, e);
             }
