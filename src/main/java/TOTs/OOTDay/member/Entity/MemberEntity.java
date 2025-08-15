@@ -1,4 +1,4 @@
-package TOTs.OOTDay.member;
+package TOTs.OOTDay.member.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;

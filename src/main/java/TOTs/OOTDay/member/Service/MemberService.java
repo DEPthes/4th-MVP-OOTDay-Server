@@ -1,7 +1,9 @@
-package TOTs.OOTDay.member;
+package TOTs.OOTDay.member.Service;
 
 import TOTs.OOTDay.config.JwtUtil;
 import TOTs.OOTDay.member.DTO.*;
+import TOTs.OOTDay.member.Entity.MemberEntity;
+import TOTs.OOTDay.member.Repository.MemberRepository;
 import TOTs.OOTDay.sms.SmsService;
 import TOTs.OOTDay.sms.ResetPasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final SmsService smsService;
+    private final RememberMeService rememberMeService;
 
     //회원가입
     public UUID join(MemberJoinDTO dto) {
@@ -84,6 +87,15 @@ public class MemberService {
 
         // 로그인 성공 -> JWT 토큰 생성 후 반환
         return JwtUtil.generateToken(member.getMemberId());
+    }
+
+    // Refresh Token 발급
+    public String issueRefreshTokenIfNeeded(String memberId, boolean rememberMe) {
+        if(!rememberMe) {
+            return null;
+        }
+
+        return rememberMeService.issueRefreshToken(memberId, 14);
     }
 
     // 설문
