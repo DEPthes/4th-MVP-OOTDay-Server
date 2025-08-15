@@ -15,6 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/members/join", // 회원가입
                         "/api/members/find-id", // 아이디 찾기
                         "/api/members/reset-password/**", // 비밀번호 찾기
+                        "/api/members/refresh", // Access Token 재발급
+                        "/api/members/logout", // 로그아웃
                         "/sms/**", // sms 관련 모든 것
                         "/error"
                 );

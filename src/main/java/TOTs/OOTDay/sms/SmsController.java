@@ -1,6 +1,6 @@
 package TOTs.OOTDay.sms;
 
-import TOTs.OOTDay.member.MemberService;
+import TOTs.OOTDay.member.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.http.ResponseEntity;
