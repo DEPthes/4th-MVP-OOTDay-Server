@@ -81,10 +81,6 @@ public class VertexAiItemService {
 
         String text = vertexAiDto.getCategory() + " " + vertexAiDto.getBrand() + " " + vertexAiDto.getColor() + " " + vertexAiDto.getStyle();
 
-        System.out.println("text = " + text);
-        String apiUrl = "https://openapi.naver.com/v1/search/shop?query=" + text;
-
-
         ShoppingRequest request = new ShoppingRequest();
         request.setQuery(text);
         URI uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com/v1/search/shop")
@@ -105,7 +101,7 @@ public class VertexAiItemService {
 
         List<ShoppingResponse.ShoppingItem> items = body.getItems();
         ShoppingResponse.ShoppingItem item = items.getFirst();
-        return new ItemDto(item.getTitle(), item.getImage(), item.getLink());
+        return new ItemDto(item.getImage(), item.getLink());
     }
 
     private String extractJsonFromGeminiResponse(String response) {// 백틱 제거
