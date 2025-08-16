@@ -1,8 +1,8 @@
-package TOTs.OOTDay.service;
+package TOTs.OOTDay.styling;
 
-import TOTs.OOTDay.domain.ClothingRequest;
-import TOTs.OOTDay.util.stylingoption.domain.MoodDto;
-import TOTs.OOTDay.util.stylingoption.domain.PlaceDto;
+import TOTs.OOTDay.wardrobe.ClothingRequest;
+import TOTs.OOTDay.styling.stylingoption.domain.MoodDto;
+import TOTs.OOTDay.styling.stylingoption.domain.PlaceDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.vertexai.VertexAI;

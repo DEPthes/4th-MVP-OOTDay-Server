@@ -1,8 +1,5 @@
-package TOTs.OOTDay.service;
+package TOTs.OOTDay.wardrobe;
 
-import TOTs.OOTDay.domain.Cloth;
-import TOTs.OOTDay.domain.ClothingRequest;
-import TOTs.OOTDay.repository.ClothRepository;
 import TOTs.OOTDay.util.s3.S3DomainType;
 import TOTs.OOTDay.util.s3.S3Service;
 import lombok.RequiredArgsConstructor;

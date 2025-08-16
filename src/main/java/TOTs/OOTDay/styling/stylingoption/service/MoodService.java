@@ -1,10 +1,8 @@
-package TOTs.OOTDay.util.stylingoption.service;
+package TOTs.OOTDay.styling.stylingoption.service;
 
-import TOTs.OOTDay.util.stylingoption.domain.Mood;
-import TOTs.OOTDay.util.stylingoption.domain.MoodDto;
-import TOTs.OOTDay.util.stylingoption.domain.Place;
-import TOTs.OOTDay.util.stylingoption.domain.PlaceDto;
-import TOTs.OOTDay.util.stylingoption.repository.MoodRepository;
+import TOTs.OOTDay.styling.stylingoption.domain.Mood;
+import TOTs.OOTDay.styling.stylingoption.domain.MoodDto;
+import TOTs.OOTDay.styling.stylingoption.repository.MoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
