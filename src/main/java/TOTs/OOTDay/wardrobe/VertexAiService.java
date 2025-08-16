@@ -1,6 +1,5 @@
-package TOTs.OOTDay.service;
+package TOTs.OOTDay.wardrobe;
 
-import TOTs.OOTDay.domain.ClothingRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.vertexai.VertexAI;
 import com.google.cloud.vertexai.api.Blob;

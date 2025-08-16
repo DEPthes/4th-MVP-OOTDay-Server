@@ -1,4 +1,4 @@
- package TOTs.OOTDay.domain;
+ package TOTs.OOTDay.wardrobe;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

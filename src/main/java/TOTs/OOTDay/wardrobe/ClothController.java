@@ -1,9 +1,5 @@
-package TOTs.OOTDay.controller;
+package TOTs.OOTDay.wardrobe;
 
-import TOTs.OOTDay.domain.Cloth;
-import TOTs.OOTDay.domain.ClothingRequest;
-import TOTs.OOTDay.service.ClothService;
-import TOTs.OOTDay.service.VertexAiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

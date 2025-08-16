@@ -1,4 +1,4 @@
-package TOTs.OOTDay.util.stylingoption.domain;
+package TOTs.OOTDay.styling.stylingoption.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

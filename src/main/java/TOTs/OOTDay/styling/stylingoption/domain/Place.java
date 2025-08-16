@@ -1,4 +1,4 @@
-package TOTs.OOTDay.util.stylingoption.domain;
+package TOTs.OOTDay.styling.stylingoption.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

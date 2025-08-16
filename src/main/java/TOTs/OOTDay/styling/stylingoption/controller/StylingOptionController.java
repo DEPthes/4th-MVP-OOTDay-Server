@@ -1,9 +1,9 @@
-package TOTs.OOTDay.util.stylingoption.controller;
+package TOTs.OOTDay.styling.stylingoption.controller;
 
-import TOTs.OOTDay.util.stylingoption.domain.MoodDto;
-import TOTs.OOTDay.util.stylingoption.domain.PlaceDto;
-import TOTs.OOTDay.util.stylingoption.service.MoodService;
-import TOTs.OOTDay.util.stylingoption.service.PlaceService;
+import TOTs.OOTDay.styling.stylingoption.domain.MoodDto;
+import TOTs.OOTDay.styling.stylingoption.domain.PlaceDto;
+import TOTs.OOTDay.styling.stylingoption.service.MoodService;
+import TOTs.OOTDay.styling.stylingoption.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
