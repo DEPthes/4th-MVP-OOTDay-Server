@@ -1,5 +1,6 @@
-package TOTs.OOTDay.member;
+package TOTs.OOTDay.member.Repository;
 
+import TOTs.OOTDay.member.Entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
