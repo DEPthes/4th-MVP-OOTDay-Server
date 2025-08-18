@@ -1,6 +1,5 @@
-package TOTs.OOTDay.repository;
+package TOTs.OOTDay.wardrobe;
 
-import TOTs.OOTDay.domain.Cloth;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

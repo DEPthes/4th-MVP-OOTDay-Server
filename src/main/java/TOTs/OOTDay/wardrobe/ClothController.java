@@ -1,9 +1,5 @@
-package TOTs.OOTDay.controller;
+package TOTs.OOTDay.wardrobe;
 
-import TOTs.OOTDay.domain.Cloth;
-import TOTs.OOTDay.domain.ClothingRequest;
-import TOTs.OOTDay.service.ClothService;
-import TOTs.OOTDay.service.OpenAiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +15,11 @@ import java.util.UUID;
 public class ClothController {
 
     private final ClothService clothService;
-    private final OpenAiService geminiService;
+    private final VertexAiService aiService;
 
     @PostMapping
-    // 사진 받아서 gemini 한테 보낸 후 받은 정보들을 db에 저장
     public ResponseEntity<Cloth> uploadCloth(@RequestPart("image") MultipartFile image) throws IOException {
-        ClothingRequest geminiInfo = geminiService.analyzeCloth(image);
+        ClothingRequest geminiInfo = aiService.analyzeCloth(image);
 
         Cloth saved = clothService.saveCloth(geminiInfo, image);
 
