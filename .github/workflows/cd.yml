@@ -2,92 +2,26 @@ name: CD - Deploy to EC2
 
 on:
   push:
-    branches: [ main ]
-
-concurrency:
-  group: cd-ec2-${{ github.ref }}
-  cancel-in-progress: true
+    branches: [main]
 
 jobs:
   deploy:
-    name: Deploy to EC2
     runs-on: ubuntu-latest
-
     steps:
-      - name: SSH into EC2 and deploy
-        uses: appleboy/ssh-action@v1.0.0
+      - uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
-          command_timeout: 30m
           script: |
-            set -euo pipefail
-
-            APP_DIR="$HOME/app/4th-MVP-OOTDay-Server"
-            JAR_PATH="$APP_DIR/build/libs/OOTDay-0.0.1-SNAPSHOT.jar"
-            LOG_FILE="$APP_DIR/app.log"
-            PID_FILE="$APP_DIR/app.pid"
-            PORT="8080"
-
-            echo ">>> Move to app dir"
-            cd "$APP_DIR"
-
-            echo ">>> Pull latest code"
+            set -e
+            cd ~/app/4th-MVP-OOTDay-Server
             git pull origin main
-
-            echo ">>> Ensure gradlew is executable"
-            chmod +x ./gradlew || true
-
-            echo ">>> Build"
+            chmod +x ./gradlew
             ./gradlew clean build -x test
-
-            echo ">>> Install lsof if missing (for port kill)"
-            command -v lsof >/dev/null 2>&1 || { sudo apt-get update -y && sudo apt-get install -y lsof; }
-
-            echo ">>> Stop old process (if any)"
-            # 1) PID 파일 기준 종료
-            if [ -f "$PID_FILE" ] && ps -p "$(cat "$PID_FILE")" > /dev/null 2>&1; then
-              kill "$(cat "$PID_FILE")" || true
-              for i in {1..10}; do
-                ps -p "$(cat "$PID_FILE")" > /dev/null 2>&1 || break
-                sleep 1
-              done
-            fi
-
-            # 2) 이름 기준 종료 (Jar/JarLauncher 모두 커버, 권한 이슈 대비 sudo)
-            sudo pkill -f 'OOTDay-0.0.1-SNAPSHOT.jar' || true
-            sudo pkill -f 'org.springframework.boot.loader.launch.JarLauncher' || true
-
-            # 3) 포트 점유 프로세스 강제 종료 (최후 방어)
-            sudo lsof -ti :$PORT | xargs -r sudo kill -9 || true
-
-            echo ">>> Verify port is free"
-            if ss -lnt | grep -q ":$PORT "; then
-              echo "Port $PORT still in use. Aborting."
-              exit 1
-            fi
-
-            echo ">>> Start new process"
-            : > "$LOG_FILE"
-
-            setsid nohup env \
-              GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/vertex/key.json \
-              VERTEX_PROJECT_ID=ootdays \
-              VERTEX_LOCATION=us-central1 \
-              java -jar "$JAR_PATH" \
-              >> "$LOG_FILE" 2>&1 < /dev/null &
-
-            echo $! > "$PID_FILE"
-            sleep 2
-
-            echo ">>> Sanity check"
-            if ps -p "$(cat "$PID_FILE")" > /dev/null 2>&1; then
-              ps -p "$(cat "$PID_FILE")" -o pid,cmd=
-              echo ">>> Tail last 80 lines of app.log"
-              tail -n 80 "$LOG_FILE" || true
-            else
-              echo "Process appears not running. Dumping last 200 lines:"
-              tail -n 200 "$LOG_FILE" || true
-              exit 1
-            fi
+            if [ -f app.pid ]; then kill -9 $(cat app.pid) || true; rm -f app.pid; fi
+            nohup env GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/vertex/key.json \
+                     VERTEX_PROJECT_ID=ootdays \
+                     VERTEX_LOCATION=us-central1 \
+                     java -jar build/libs/OOTDay-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+            echo $! > app.pid
