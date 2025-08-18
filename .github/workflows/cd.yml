@@ -20,6 +20,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
+          command_timeout: 30m
           script: |
             set -euo pipefail
 
@@ -42,24 +43,23 @@ jobs:
             ./gradlew clean build -x test
 
             echo ">>> Install lsof if missing (for port kill)"
-            command -v lsof >/dev/null 2>&1 || sudo apt-get update -y && sudo apt-get install -y lsof
+            command -v lsof >/dev/null 2>&1 || { sudo apt-get update -y && sudo apt-get install -y lsof; }
 
             echo ">>> Stop old process (if any)"
-            # 1) PID 파일로 종료
+            # 1) PID 파일 기준 종료
             if [ -f "$PID_FILE" ] && ps -p "$(cat "$PID_FILE")" > /dev/null 2>&1; then
               kill "$(cat "$PID_FILE")" || true
-              # 천천히 내려가는 경우를 대비한 대기 루프
               for i in {1..10}; do
                 ps -p "$(cat "$PID_FILE")" > /dev/null 2>&1 || break
                 sleep 1
               done
             fi
 
-            # 2) 프로세스 이름으로 종료 (Jar 파일명/Launcher 모두 커버, 권한 이슈 대비 sudo)
+            # 2) 이름 기준 종료 (Jar/JarLauncher 모두 커버, 권한 이슈 대비 sudo)
             sudo pkill -f 'OOTDay-0.0.1-SNAPSHOT.jar' || true
             sudo pkill -f 'org.springframework.boot.loader.launch.JarLauncher' || true
 
-            # 3) 포트 점유 프로세스 강제 종료 (최후 안전망)
+            # 3) 포트 점유 프로세스 강제 종료 (최후 방어)
             sudo lsof -ti :$PORT | xargs -r sudo kill -9 || true
 
             echo ">>> Verify port is free"
@@ -71,7 +71,6 @@ jobs:
             echo ">>> Start new process"
             : > "$LOG_FILE"
 
-            # 세션 완전 분리 실행
             setsid nohup env \
               GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/vertex/key.json \
               VERTEX_PROJECT_ID=ootdays \
