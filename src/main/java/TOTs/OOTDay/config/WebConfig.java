@@ -18,6 +18,12 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/members/refresh", // Access Token 재발급
                         "/api/members/logout", // 로그아웃
                         "/sms/**", // sms 관련 모든 것
+                        //Swagger 관련
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**",
                         "/error"
                 );
     }
