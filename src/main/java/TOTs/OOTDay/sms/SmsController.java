@@ -64,8 +64,8 @@ public class SmsController {
     // 아이디 찾기용 인증번호 전송
     @PostMapping("/send/find-id")
     @Operation(
-            summary = "아이디/비번 찾기용 인증번호 전송",
-            description = "아이디/비밀번호 찾기에 사용할 인증번호를 전송합니다.",
+            summary = "아이디 찾기용 인증번호 전송",
+            description = "아이디 찾기에 사용할 인증번호를 전송합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "전송 성공"),
                     @ApiResponse(responseCode = "400", description = "유효성/전송 실패")
