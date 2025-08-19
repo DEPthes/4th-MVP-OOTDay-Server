@@ -41,11 +41,13 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'org.postgresql:postgresql:42.7.3'
 
-	implementation group: 'com.google.genai', name: 'google-genai', version: '1.11.0'
-	implementation 'com.google.cloud:google-cloud-vertexai:1.1.0'
+	implementation("com.google.genai:google-genai:1.11.0")
+	implementation(platform("io.grpc:grpc-bom:1.70.0"))
+	implementation("com.google.cloud:google-cloud-vertexai:1.1.0")
 	implementation("io.grpc:grpc-netty-shaded")
 	implementation("io.grpc:grpc-protobuf")
 	implementation("io.grpc:grpc-stub")
+
 
 	//jwt 의존성 0.11.5 버전
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
