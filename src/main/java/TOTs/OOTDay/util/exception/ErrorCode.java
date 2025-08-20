@@ -37,17 +37,16 @@ public enum ErrorCode {
 
     // S3 이미지 증복 에러
     S3_IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3_IMAGE_UPLOAD_FAILED", "[OOTDay] S3 이미지 업로드에서 에러가 발생하였습니다."),
-    
-    
+
     // 회원 에러(M)
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND,"MEMBER_NOT_FOUND" ,"[OOTDay] 회원 정보를 찾을 수 없습니다." ),
     PASSWORD_IS_INVALID(HttpStatus.BAD_REQUEST, "PASSWORD_IS_INVALID", "[OOTDay] 비밀번호가 잘못되었습니다" ),
     SAME_PASSWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST,"SAME_PASSWORD_NOT_ALLOWED" , "[OOTDay] 이전과 동일한 비밀번호로는 변경할 수 없습니다."),
-    DUPLICATE_EMAIL_EXCEPTION(HttpStatus.BAD_REQUEST,"DUPLICATE_EMAIL_EXCEPTION", "[OOTDay] 이미 존재하는 이메일입니다." );
+    DUPLICATE_EMAIL_EXCEPTION(HttpStatus.BAD_REQUEST,"DUPLICATE_EMAIL_EXCEPTION", "[OOTDay] 이미 존재하는 이메일입니다." ),
 
-
-
-
+    // SMS 에러
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "INVALID_VERIFICATION_CODE", "[OOTDay] 인증번호가 일치하지 않습니다."),
+    CODE_NOT_SENT(HttpStatus.BAD_REQUEST, "CODE_NOT_SENT", "[OOTDay] 해당 전화번호로 발송된 인증번호가 없습니다.");
 
     private final HttpStatus status;
     private final String error;

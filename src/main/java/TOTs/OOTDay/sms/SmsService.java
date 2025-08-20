@@ -1,5 +1,8 @@
 package TOTs.OOTDay.sms;
 
+import TOTs.OOTDay.sms.exception.SmsCodeMismatch;
+import TOTs.OOTDay.sms.exception.SmsCodeNotSent;
+import TOTs.OOTDay.util.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
@@ -89,14 +92,17 @@ public class SmsService {
 
 
     // 회원가입 시 인증번호 검증
-    public boolean verifySignupCode(String phoneNumber, String inputCode) {
+    public void verifySignupCode(String phoneNumber, String inputCode) {
         String savedCode = signupVerificationMap.get(phoneNumber);
-        boolean isCorrect = inputCode.equals(savedCode);
-        if (isCorrect) {
-            signupVerifiedPhoneMap.put(phoneNumber, true);
-            signupVerificationMap.remove(phoneNumber);
+
+        if (savedCode == null) {
+            throw new SmsCodeNotSent();
         }
-        return isCorrect;
+        if (!inputCode.equals(savedCode)) {
+            throw new SmsCodeMismatch();
+        }
+        signupVerifiedPhoneMap.put(phoneNumber, true);
+        signupVerificationMap.remove(phoneNumber);
     }
 
     // 회원가입 시 인증 여부 확인용 메서드

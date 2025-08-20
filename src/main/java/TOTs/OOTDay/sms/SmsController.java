@@ -48,7 +48,7 @@ public class SmsController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "검증 결과(성공/실패)",
                             content = @Content(schema = @Schema(implementation = String.class))),
-                    @ApiResponse(responseCode = "400", description = "유효성 실패")
+                    @ApiResponse(responseCode = "400", description = "인증 번호 불일치")
             }
 
     )
@@ -57,8 +57,9 @@ public class SmsController {
             @RequestParam String phoneNumber,
             @Parameter(description = "인증번호(6자리)", example = "123456", required = true)
             @RequestParam String code) {
-        boolean success = smsService.verifySignupCode(phoneNumber, code); // 코드 일치하는지 확인
-        return ResponseEntity.ok(success ? "인증 성공" : "인증 실패");
+
+        smsService.verifySignupCode(phoneNumber, code);
+        return ResponseEntity.ok("인증 성공");
     }
 
     // 아이디 찾기용 인증번호 전송
